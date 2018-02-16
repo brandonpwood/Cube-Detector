@@ -2,19 +2,32 @@
     Brandon Wood
     FRC 334
     2/15/2018
-    R18 detection methods.
+    R18 power cube detection methods.
 
-    Return coordinates, areas, and perimeters of found contours. 
+    Return coordinates, areas, and perimeters of found contours.For detecting power cubes. 
     Comms with the robot is handled by the network class completely.
 
     TOOD:
         Decide which cube to grab ht
 '''
-class Vis:
-    def __init__(self, LOWER_BOUNDS, UPPER_BOUNDS, verbose = False):
+class PC:
+    def __init__(self, verbose = False):
         # Storage
-        self.LOWER_BOUNDS = LOWER_BOUNDS
-        self.UPPER_BOUNDS = UPPER_BOUNDS
+        self.LOWER_BOUNDS = np.array([47, 140, 255])
+        self.UPPER_BOUNDS = np.array([20, 81, 118])
+
+        # Contours
+        self.SQUARENESS = 40  # Scaled down by 1000 before input
+		self.MIN_PERIM = 10 # Scaled up by 10 before input
+
+        # Hough Transform
+        self.RHO_ACC = 400  # Scaled by 1/10
+		self.THETA_ACC = 2 # inputs as np.pi/THETA_ACC 		
+		self.MIN_LENGTH = 200
+		self.THETA_THRESH = 10 # Number of degrees from horizontal lines are called horizontal
+		self.NUM_CUBES = 6
+		self.NUM_ITERS = 1
+		self.EPSILON = 500 # Scaled by 1/1000
 
         #Settings
         self.verbose = verbose
@@ -61,7 +74,8 @@ class Vis:
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
             coords = (cX, cY)
-        return coords
+        
+        return ['c_offset'], coords[0]
 
     def detect(self, c):
         peri = cv2.arcLength(c, False)
@@ -85,7 +99,7 @@ class Vis:
 		if type(lines) != type(None):
             hits = self.find_hits(lines)
             coords = self.collect_points(hits)
-		return coords
+		return ['cube_offset'], [coords[0]]
 
 	def find_hits(self, lines):
 		horz = []
@@ -112,4 +126,4 @@ class Vis:
     
     def max_area(self, contours):
         areas = [cv2.contourArea(contour) for contour in contours]
-        return max(area)
+        return max(areas)

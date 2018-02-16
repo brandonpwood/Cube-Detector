@@ -10,13 +10,20 @@
 import numpy as np
 import cv2
 
+from subprocess import call 
+
+
 class Tuner:
     ''' Primary tuning class.
     '''
     def __init__(self, verbose = False):
         # Settings
         self.verbose = False
-    
+
+        # Run config file
+        call(["~/cv/configure.sh"], shell=True)
+
+
     # Run Cycles
     def tune_all(self):
         self.tune_hsv()
