@@ -13,6 +13,10 @@ import cv2
 class Tuner:
     ''' Primary tuning class.
     '''
+    def __init__(self, verbose = False):
+        # Settings
+        self.verbose = False
+    
     # Run Cycles
     def tune_all(self):
         self.tune_hsv()
